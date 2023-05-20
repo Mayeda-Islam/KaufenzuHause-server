@@ -1,5 +1,4 @@
 const getAllCategories = (categoryCollection) => (req, res) => {
-
     categoryCollection.find().toArray()
 
         .then(data => {
