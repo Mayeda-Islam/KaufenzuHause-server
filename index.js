@@ -3,7 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const categoriesRoutes = require('./routes/categoriesRoutes')
+const categoriesRoutes = require('./routes/categoriesRoutes');
+const aboutUsRoutes = require('./routes/aboutUsRoutes');
 
 
 const app = express();
@@ -31,10 +32,12 @@ async function run() {
         // set up database collection 
         const db = client.db('kaufenzuhause')
         const categoryCollection = db.collection('categories')
+        const aboutUsCollection = db.collection('aboutUs')
 
 
         // set up routes 
         app.use(categoriesRoutes(categoryCollection))
+        app.use(aboutUsRoutes(aboutUsCollection))
     }
     finally {
 
