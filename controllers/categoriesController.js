@@ -19,7 +19,6 @@ const createCategory = (categoryCollection) => (req, res) => {
         })
         .catch(error => {
             console.error('category Error:', error);
-
         });
 };
 
