@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const categoriesRoutes = require('./routes/categoriesRoutes');
 const aboutUsRoutes = require('./routes/aboutUsRoutes');
-
+const imageUploaderRoutes = require('./routes/imageUploaderRoutes')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static("image"));
 
 
 
@@ -36,6 +36,7 @@ async function run() {
 
 
         // set up routes 
+        app.use(imageUploaderRoutes)
         app.use(categoriesRoutes(categoryCollection))
         app.use(aboutUsRoutes(aboutUsCollection))
     }
