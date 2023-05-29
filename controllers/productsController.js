@@ -1,3 +1,19 @@
+const getAllProducts = (productsCollection) => (req, res) => {
+  productsCollection
+    .find()
+    .toArray()
+
+    .then((data) => {
+      res.json({
+        status: "success",
+        data: data,
+      });
+    })
+    .catch((error) => {
+      console.error("Error in Category", error);
+    });
+};
+
 const createProduct = (productsCollection) => (req, res) => {
   const productData = req.body;
 
@@ -15,4 +31,4 @@ const createProduct = (productsCollection) => (req, res) => {
       console.error("category Error:", error);
     });
 };
-module.exports = { createProduct };
+module.exports = { createProduct, getAllProducts };
