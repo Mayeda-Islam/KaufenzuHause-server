@@ -26,7 +26,7 @@ const createBannerSlider = (bannerSliderCollection) => (req, res) => {
     .then((result) => {
       res.json({
         status: "success",
-        message: "Slider added successfully",
+        message: "banner image added successfully",
         //   data: allData,
       });
     })
