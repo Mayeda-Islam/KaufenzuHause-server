@@ -1,7 +1,7 @@
 module.exports = (categoryCollection) => {
+  const categoriesController = require("../controllers/categoriesController");
   const express = require("express");
   const router = express.Router();
-  const categoriesController = require("../controllers/categoriesController");
 
   router.get(
     "/categories",
@@ -11,6 +11,9 @@ module.exports = (categoryCollection) => {
     "/category",
     categoriesController.createCategory(categoryCollection)
   );
-
+  router.delete(
+    "/category/:categoryId",
+    categoriesController.deleteCategory(categoryCollection)
+  );
   return router;
 };

@@ -1,3 +1,5 @@
+const { ObjectId } = require("mongodb");
+
 const getAllCategories = (categoryCollection) => (req, res) => {
   categoryCollection
     .find()
@@ -31,8 +33,28 @@ const createCategory = (categoryCollection) => (req, res) => {
       console.error("category Error:", error);
     });
 };
+const deleteCategory = (categoryCollection) => (req, res) => {
+  const categoryData = req.params.categoryId;
+
+  categoryCollection.deleteOne({ _id: new ObjectId(categoryData) });
+
+  const allData = categoryCollection
+    .find()
+    .toArray()
+
+    .then((result) => {
+      res.json({
+        status: "success",
+        response: allData,
+      });
+    })
+    .catch((error) => {
+      console.error("category Error:", error);
+    });
+};
 
 module.exports = {
   getAllCategories,
   createCategory,
+  deleteCategory,
 };
