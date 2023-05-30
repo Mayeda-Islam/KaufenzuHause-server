@@ -20,7 +20,22 @@ const multiImageUploads = async (req, res) => {
     } catch (err) { }
 };
 
+
+const bannerSliderImage = async (req, res) => {
+
+    try {
+        console.log(req.file)
+        res.json({
+            status: "success",
+            url: `http://localhost:5000/${req.file.filename}`,
+        });
+    } catch (err) { }
+}
+
+
+
 module.exports = {
     singleImage,
-    multiImageUploads
+    multiImageUploads,
+    bannerSliderImage
 };

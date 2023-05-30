@@ -25,6 +25,7 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
+
   try {
     // set up database collection
     const db = client.db("kaufenzuhause");
@@ -39,6 +40,7 @@ async function run() {
     app.use(aboutUsRoutes(aboutUsCollection));
   } finally {
   }
+
 }
 
 run().catch(console.dir);
