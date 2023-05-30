@@ -1,3 +1,5 @@
+const { ObjectId } = require("mongodb");
+
 const getAllCategories = (categoryCollection) => (req, res) => {
   categoryCollection
     .find()
@@ -14,25 +16,35 @@ const getAllCategories = (categoryCollection) => (req, res) => {
     });
 };
 
-const createCategory = (categoryCollection) => (req, res) => {
+const createCategory = (categoryCollection) => async (req, res) => {
   const categoryData = req.body;
-
-  categoryCollection.insertOne(categoryData);
-  const allData = categoryCollection
-    .find()
-    .toArray()
-    .then((result) => {
-      res.json({
-        message: "category Added successfully",
-        data: allData,
-      });
-    })
-    .catch((error) => {
-      console.error("category Error:", error);
-    });
+  const result = await categoryCollection.insertOne(categoryData);
+  const allData = await categoryCollection.find({}).toArray()
+  // .then((result) => {
+  //   res.json({
+  //     message: "category Added successfully",
+  //     data: allData,
+  //   });
+  // })
+  res.send({
+    status: "success",
+    data: allData,
+  });
+}
+const deleteCategory = (categoryCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const result = await categoryCollection.deleteOne(filter);
+  const data = await categoryCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
 };
+
 
 module.exports = {
   getAllCategories,
   createCategory,
+  deleteCategory
 };
