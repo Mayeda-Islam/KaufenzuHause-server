@@ -11,7 +11,7 @@ const multiImageUploads = async (req, res) => {
     try {
         const imageUrl = [];
         req.files.forEach((img) => {
-            imageUrl.push(`${process.env.multer_url}/${img.filename}`);
+            imageUrl.push(`http://localhost:5000/${img.filename}`);
         });
         res.status(200).json({
             status: "success",
