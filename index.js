@@ -8,6 +8,7 @@ const aboutUsRoutes = require("./routes/aboutUsRoutes");
 const imageUploaderRoutes = require("./routes/imageUploaderRoutes");
 const productsRoute = require("./routes/productsRoute");
 const heroSliderRoute = require("./routes/heroSliderRoute");
+const bannerSliderRoute = require("./routes/bannerSliderRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ async function run() {
     const db = client.db("kaufenzuhause");
     const categoryCollection = db.collection("categories");
     const heroSliderCollection = db.collection("heroSlider");
+    const bannerSliderCollection = db.collection("bannerSlider");
     const productsCollection = db.collection("products");
     const aboutUsCollection = db.collection("aboutUs");
 
@@ -40,6 +42,7 @@ async function run() {
     app.use(productsRoute(productsCollection));
     app.use(aboutUsRoutes(aboutUsCollection));
     app.use(heroSliderRoute(heroSliderCollection));
+    app.use(bannerSliderRoute(bannerSliderCollection));
   } finally {
   }
 }
