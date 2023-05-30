@@ -1,3 +1,5 @@
+const { ObjectId } = require("mongodb");
+
 const getAllProducts = (productsCollection) => (req, res) => {
   productsCollection
     .find()
@@ -23,6 +25,7 @@ const createProduct = (productsCollection) => (req, res) => {
     .toArray()
     .then((result) => {
       res.json({
+        status: 'success',
         message: "Product Added successfully",
         //   data: allData,
       });
@@ -31,4 +34,19 @@ const createProduct = (productsCollection) => (req, res) => {
       console.error("category Error:", error);
     });
 };
-module.exports = { createProduct, getAllProducts };
+
+const deleteProduct = (productsCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const result = await productsCollection.deleteOne(filter);
+  const data = await productsCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
+module.exports = {
+  createProduct,
+  getAllProducts,
+  deleteProduct
+};

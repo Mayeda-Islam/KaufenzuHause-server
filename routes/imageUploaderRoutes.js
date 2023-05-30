@@ -12,16 +12,16 @@ router.post(
 
 router.post(
   "/multipleImageUpload",
-  fileUploader.array("image"),
+  fileUploader.array("images"),
   imageUploaderController.multiImageUploads
 );
 
 
 // slider image upload
 router.post(
-    '/sliderImageUpload',
-    fileUploader.single(''),
-    imageUploaderController.bannerSliderImage
+  '/sliderImageUpload',
+  fileUploader.single(''),
+  imageUploaderController.bannerSliderImage
 );
 
 module.exports = router

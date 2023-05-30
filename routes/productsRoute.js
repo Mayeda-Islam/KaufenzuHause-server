@@ -8,6 +8,7 @@ module.exports = (productsCollection) => {
     productsController.getAllProducts(productsCollection)
   );
   router.post("/product", productsController.createProduct(productsCollection));
+  router.delete("/product/:id", productsController.deleteProduct(productsCollection));
 
   return router;
 };
