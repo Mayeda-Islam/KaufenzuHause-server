@@ -7,6 +7,7 @@ const categoriesRoutes = require("./routes/categoriesRoutes");
 const aboutUsRoutes = require("./routes/aboutUsRoutes");
 const imageUploaderRoutes = require("./routes/imageUploaderRoutes");
 const productsRoute = require("./routes/productsRoute");
+const heroSliderRoute = require("./routes/heroSliderRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,11 +26,11 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-
   try {
     // set up database collection
     const db = client.db("kaufenzuhause");
     const categoryCollection = db.collection("categories");
+    const heroSliderCollection = db.collection("heroSlider");
     const productsCollection = db.collection("products");
     const aboutUsCollection = db.collection("aboutUs");
 
@@ -38,9 +39,9 @@ async function run() {
     app.use(categoriesRoutes(categoryCollection));
     app.use(productsRoute(productsCollection));
     app.use(aboutUsRoutes(aboutUsCollection));
+    app.use(heroSliderRoute(heroSliderCollection));
   } finally {
   }
-
 }
 
 run().catch(console.dir);
