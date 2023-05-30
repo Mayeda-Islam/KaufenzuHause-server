@@ -11,6 +11,10 @@ module.exports = (categoryCollection) => {
     "/category",
     categoriesController.createCategory(categoryCollection)
   );
+  router.delete(
+    "/category/:id",
+    categoriesController.deleteCategory(categoryCollection)
+  );
 
   return router;
 };
