@@ -33,6 +33,9 @@ async function run() {
         const db = client.db('kaufenzuhause')
         const categoryCollection = db.collection('categories')
         const aboutUsCollection = db.collection('aboutUs')
+        const sliderCollection = db.collection('sliderImages');
+
+        // header section collection
 
 
         // set up routes 
