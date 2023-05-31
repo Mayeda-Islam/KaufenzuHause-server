@@ -19,18 +19,13 @@ const getAllCategories = (categoryCollection) => (req, res) => {
 const createCategory = (categoryCollection) => async (req, res) => {
   const categoryData = req.body;
   const result = await categoryCollection.insertOne(categoryData);
-  const allData = await categoryCollection.find({}).toArray()
-  // .then((result) => {
-  //   res.json({
-  //     message: "category Added successfully",
-  //     data: allData,
-  //   });
-  // })
+  const allData = await categoryCollection.find({}).toArray();
+
   res.send({
     status: "success",
     data: allData,
   });
-}
+};
 const deleteCategory = (categoryCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -42,9 +37,8 @@ const deleteCategory = (categoryCollection) => async (req, res) => {
   });
 };
 
-
 module.exports = {
   getAllCategories,
   createCategory,
-  deleteCategory
+  deleteCategory,
 };

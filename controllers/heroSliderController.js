@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 
-const getAllProducts = (productsCollection) => (req, res) => {
-  productsCollection
+const getAllHeroSlider = (heroSliderCollection) => (req, res) => {
+  heroSliderCollection
     .find()
     .toArray()
 
@@ -16,7 +16,7 @@ const getAllProducts = (productsCollection) => (req, res) => {
     });
 };
 
-const createProduct = (productsCollection) => (req, res) => {
+const createHeroSlider = (productsCollection) => (req, res) => {
   const productData = req.body;
 
   productsCollection.insertOne(productData);
@@ -35,7 +35,7 @@ const createProduct = (productsCollection) => (req, res) => {
     });
 };
 
-const deleteProduct = (productsCollection) => async (req, res) => {
+const deleteHeroSlider = (productsCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
   const result = await productsCollection.deleteOne(filter);
@@ -46,7 +46,7 @@ const deleteProduct = (productsCollection) => async (req, res) => {
   });
 };
 module.exports = {
-  createProduct,
-  getAllProducts,
-  deleteProduct,
+  getAllHeroSlider,
+  createHeroSlider,
+  deleteHeroSlider,
 };

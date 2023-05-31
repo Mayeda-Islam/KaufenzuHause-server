@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 
-const getAllProducts = (productsCollection) => (req, res) => {
-  productsCollection
+const getAllBannerSlider = (bannerSliderCollection) => (req, res) => {
+  bannerSliderCollection
     .find()
     .toArray()
 
@@ -16,17 +16,17 @@ const getAllProducts = (productsCollection) => (req, res) => {
     });
 };
 
-const createProduct = (productsCollection) => (req, res) => {
+const createBannerSlider = (bannerSliderCollection) => (req, res) => {
   const productData = req.body;
 
-  productsCollection.insertOne(productData);
-  const allData = productsCollection
+  bannerSliderCollection.insertOne(productData);
+  const allData = bannerSliderCollection
     .find()
     .toArray()
     .then((result) => {
       res.json({
         status: "success",
-        message: "Product Added successfully",
+        message: "banner image added successfully",
         //   data: allData,
       });
     })
@@ -35,18 +35,18 @@ const createProduct = (productsCollection) => (req, res) => {
     });
 };
 
-const deleteProduct = (productsCollection) => async (req, res) => {
+const deleteBannerSlider = (bannerSliderCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
-  const result = await productsCollection.deleteOne(filter);
-  const data = await productsCollection.find({}).toArray();
+  const result = await bannerSliderCollection.deleteOne(filter);
+  const data = await bannerSliderCollection.find({}).toArray();
   res.send({
     status: "success",
     data: data,
   });
 };
 module.exports = {
-  createProduct,
-  getAllProducts,
-  deleteProduct,
+  getAllBannerSlider,
+  createBannerSlider,
+  deleteBannerSlider,
 };
