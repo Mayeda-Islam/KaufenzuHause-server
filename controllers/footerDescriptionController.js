@@ -38,11 +38,15 @@ const createFooterDescription = (footerDescriptionCollection) => (req, res) => {
 const updateFooterDescription =
   (footerDescriptionCollection) => async (req, res) => {
     const id = req.params.id;
+    const updatedData = req.body;
     const filter = { _id: new ObjectId(id) };
-    const result = await footerDescriptionCollection.deleteOne(filter);
+    const result = await footerDescriptionCollection.updateOne(filter, {
+      $set: updatedData,
+    });
     const data = await footerDescriptionCollection.find({}).toArray();
     res.send({
       status: "success",
+      message: "data updated",
       data: data,
     });
   };

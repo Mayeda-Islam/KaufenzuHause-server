@@ -15,7 +15,7 @@ module.exports = (footerDescriptionCollection) => {
       footerDescriptionCollection
     )
   );
-  router.delete(
+  router.patch(
     "/footer-description/:id",
     footerDescriptionController.updateFooterDescription(
       footerDescriptionCollection
