@@ -11,6 +11,7 @@ const heroSliderRoute = require("./routes/heroSliderRoute");
 const bannerSliderRoute = require("./routes/bannerSliderRoute");
 const footerLogoRoutes = require("./routes/footerLogoRoutes");
 const headerLogoRoutes = require("./routes/headerLogoRoutes");
+const footerDescriptionRoutes = require("./routes/footerDescriptionRoutes");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -39,6 +40,7 @@ async function run() {
     const aboutUsCollection = db.collection("aboutUs");
     const footerLogoCollection = db.collection("footerLogo");
     const headerLogoCollection = db.collection("headerLogo");
+    const footerDescriptionCollection = db.collection("footerDescription");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -49,6 +51,7 @@ async function run() {
     app.use(bannerSliderRoute(bannerSliderCollection));
     app.use(footerLogoRoutes(footerLogoCollection));
     app.use(headerLogoRoutes(headerLogoCollection));
+    app.use(footerDescriptionRoutes(footerDescriptionCollection));
   } finally {
   }
 }
