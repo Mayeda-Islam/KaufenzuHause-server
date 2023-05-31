@@ -31,6 +31,15 @@ const createCategory = (categoryCollection) => async (req, res) => {
     data: allData,
   });
 }
+const getCategoryById = (categoryCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const data = await categoryCollection.findOne( filter );
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
 const deleteCategory = (categoryCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -45,6 +54,7 @@ const deleteCategory = (categoryCollection) => async (req, res) => {
 
 module.exports = {
   getAllCategories,
+  getCategoryById,
   createCategory,
   deleteCategory
 };

@@ -7,7 +7,13 @@ module.exports = (productsCollection) => {
     "/products",
     productsController.getAllProducts(productsCollection)
   );
+
+  router.get("/product/:categoryTitle", productsController.getProductsByParams(productsCollection));
+
+  router.get("/products/:id", productsController.getProductsById(productsCollection));
+
   router.post("/product", productsController.createProduct(productsCollection));
+
   router.delete("/product/:id", productsController.deleteProduct(productsCollection));
 
   return router;
