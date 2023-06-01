@@ -7,6 +7,10 @@ module.exports = (categoryCollection) => {
     "/categories",
     categoriesController.getAllCategories(categoryCollection)
   );
+  router.get(
+    "/categories/:id",
+    categoriesController.getCategoryById(categoryCollection)
+  );
   router.post(
     "/category",
     categoriesController.createCategory(categoryCollection)

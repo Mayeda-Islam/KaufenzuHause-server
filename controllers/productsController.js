@@ -35,6 +35,28 @@ const createProduct = (productsCollection) => (req, res) => {
     });
 };
 
+const getProductsByParams = (productsCollection) => async (req, res) => {
+  const { categoryTitle } = req.params;
+  const filter = { category: categoryTitle };
+
+  const data = await productsCollection.find(filter).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
+
+
+const getProductsById = (productsCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const data = await productsCollection.findOne(filter);
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
+
 const deleteProduct = (productsCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -49,4 +71,6 @@ module.exports = {
   createProduct,
   getAllProducts,
   deleteProduct,
+  getProductsByParams,
+  getProductsById
 };
