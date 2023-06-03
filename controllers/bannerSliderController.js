@@ -16,23 +16,15 @@ const getAllBannerSlider = (bannerSliderCollection) => (req, res) => {
     });
 };
 
-const createBannerSlider = (bannerSliderCollection) => (req, res) => {
+const createBannerSlider = (bannerSliderCollection) => async (req, res) => {
   const productData = req.body;
 
   bannerSliderCollection.insertOne(productData);
-  const allData = bannerSliderCollection
-    .find()
-    .toArray()
-    .then((result) => {
-      res.json({
-        status: "success",
-        message: "banner image added successfully",
-        //   data: allData,
-      });
-    })
-    .catch((error) => {
-      console.error("category Error:", error);
-    });
+  const data = await bannerSliderCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
 };
 
 const deleteBannerSlider = (bannerSliderCollection) => async (req, res) => {

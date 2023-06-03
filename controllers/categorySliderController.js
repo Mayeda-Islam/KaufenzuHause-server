@@ -28,6 +28,16 @@ const createCategorySlider = (categorySliderCollection) => async (req, res) => {
   });
 };
 
+const getCategorySliderById = (categorySliderCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const data = await categorySliderCollection.findOne(filter);
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
+
 const deleteCategorySlider = (categorySliderCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -56,6 +66,7 @@ const updateCategorySlider = (categorySliderCollection) => async (req, res) => {
 module.exports = {
   getAllCategorySlider,
   createCategorySlider,
+  getCategorySliderById,
   updateCategorySlider,
   deleteCategorySlider,
 };

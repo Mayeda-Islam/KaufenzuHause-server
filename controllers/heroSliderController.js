@@ -16,23 +16,14 @@ const getAllHeroSlider = (heroSliderCollection) => (req, res) => {
     });
 };
 
-const createHeroSlider = (productsCollection) => (req, res) => {
+const createHeroSlider = (productsCollection) => async (req, res) => {
   const productData = req.body;
-
   productsCollection.insertOne(productData);
-  const allData = productsCollection
-    .find()
-    .toArray()
-    .then((result) => {
-      res.json({
-        status: "success",
-        message: "Product Added successfully",
-        //   data: allData,
-      });
-    })
-    .catch((error) => {
-      console.error("category Error:", error);
-    });
+  const data = await productsCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
 };
 
 const deleteHeroSlider = (productsCollection) => async (req, res) => {

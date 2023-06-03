@@ -7,6 +7,10 @@ module.exports = (categorySliderCollection) => {
     "/category-slider",
     categorySliderController.getAllCategorySlider(categorySliderCollection)
   );
+  router.get(
+    "/category-slider/:id",
+    categorySliderController.getCategorySliderById(categorySliderCollection)
+  );
   router.post(
     "/category-slider",
     categorySliderController.createCategorySlider(categorySliderCollection)

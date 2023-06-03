@@ -20,19 +20,12 @@ const createProduct = (productsCollection) => (req, res) => {
   const productData = req.body;
 
   productsCollection.insertOne(productData);
-  const allData = productsCollection
-    .find()
-    .toArray()
-    .then((result) => {
-      res.json({
-        status: "success",
-        message: "Product Added successfully",
-        //   data: allData,
-      });
-    })
-    .catch((error) => {
-      console.error("category Error:", error);
-    });
+  const allData = productsCollection.find().toArray()
+  res.send({
+    status: "success",
+    data: allData,
+  });
+
 };
 
 const getProductsByParams = (productsCollection) => async (req, res) => {
