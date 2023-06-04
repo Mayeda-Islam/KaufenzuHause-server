@@ -1,45 +1,44 @@
 const { ObjectId } = require("mongodb");
 
-const getAllHeaderLogos = (headerLogoCollection) => (req, res) => {
-  headerLogoCollection
-    .find()
-    .toArray()
-
-    .then((data) => {
-      res.json({
-        status: "success",
-        data: data,
-      });
-    })
-    .catch((error) => {
-      console.error("Error in Category", error);
-    });
+const getAllHeaderLogos = (logoCollection) => async (req, res) => {
+  const data = await logoCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    message: "data updated",
+    data: data,
+  });
 };
 
-const createHeaderLogo = (headerLogoCollection) => (req, res) => {
+const createHeaderLogo = (logoCollection) => async (req, res) => {
   const headerLogoData = req.body;
-
-  headerLogoCollection.insertOne(headerLogoData);
-  const allData = headerLogoCollection
-    .find()
-    .toArray()
-    .then((result) => {
-      res.json({
-        status: "success",
-        message: "HeaderLogo Added successfully",
-        //   data: allData,
-      });
-    })
-    .catch((error) => {
-      console.error("category Error:", error);
-    });
+  logoCollection.insertOne(headerLogoData);
+  const data = await logoCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
 };
 
-const deleteHeaderLogo = (headerLogoCollection) => async (req, res) => {
+const updateHeaderLogo = (logoCollection) => async (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+  const filter = { _id: new ObjectId(id) };
+  const result = await logoCollection.updateOne(filter, {
+    $set: updatedData,
+  });
+  const data = await logoCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    message: "data updated",
+    data: data,
+  });
+};
+
+const deleteHeaderLogo = (logoCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
-  const result = await headerLogoCollection.deleteOne(filter);
-  const data = await headerLogoCollection.find({}).toArray();
+  const result = await logoCollection.deleteOne(filter);
+  const data = await logoCollection.find({}).toArray();
   res.send({
     status: "success",
     data: data,
@@ -48,5 +47,6 @@ const deleteHeaderLogo = (headerLogoCollection) => async (req, res) => {
 module.exports = {
   createHeaderLogo,
   getAllHeaderLogos,
+  updateHeaderLogo,
   deleteHeaderLogo,
 };

@@ -20,7 +20,7 @@ const createCategorySlider = (categorySliderCollection) => async (req, res) => {
   const infoData = req.body;
 
   await categorySliderCollection.insertOne(infoData);
-  const data = await categorySliderCollection.find().toArray();
+  const data = await categorySliderCollection.find({}).toArray();
 
   res.send({
     status: "success",
