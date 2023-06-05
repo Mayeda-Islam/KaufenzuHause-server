@@ -68,3 +68,6 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log("KaifenzuHause Server running on Port : ", port);
 });
+
+
+module.exports = app
