@@ -2,6 +2,8 @@ const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
+    // change it when upload to c-panel
+    // destination: "image/",
     destination: "image/",
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
