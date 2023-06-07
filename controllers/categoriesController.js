@@ -1,31 +1,56 @@
+const { ObjectId } = require("mongodb");
+
 const getAllCategories = (categoryCollection) => (req, res) => {
+  categoryCollection
+    .find()
+    .toArray()
 
-    categoryCollection.find().toArray()
-
-        .then(data => {
-            res.json(data);
-        })
-        .catch(error => {
-            console.error('Error in Category', error);
-        });
+    .then((data) => {
+      res.json({
+        status: "success",
+        data: data,
+      });
+    })
+    .catch((error) => {
+      console.error("Error in Category", error);
+    });
 };
 
-const createCategory = (categoryCollection) => (req, res) => {
-    const systemData = req.body;
+const createCategory = (categoryCollection) => async (req, res) => {
+  const categoryData = req.body;
+  const result = await categoryCollection.insertOne(categoryData);
+  const allData = await categoryCollection.find({}).toArray();
 
-    categoryCollection.insertOne(systemData)
+  res.send({
+    status: "success",
+    data: allData,
+  });
 
-        .then(result => {
-            res.json({ message: 'category Added successfully', systemData });
-        })
-        .catch(error => {
-            console.error('category Error:', error);
+}
+const getCategoryById = (categoryCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const data = await categoryCollection.findOne( filter );
+  res.send({
+    status: "success",
+    data: data,
+  });
 
-        });
 };
-
+const deleteCategory = (categoryCollection) => async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const result = await categoryCollection.deleteOne(filter);
+  const data = await categoryCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    data: data,
+  });
+};
 
 module.exports = {
-    getAllCategories,
-    createCategory
+  getAllCategories,
+  getCategoryById,
+  createCategory,
+  deleteCategory,
 };
