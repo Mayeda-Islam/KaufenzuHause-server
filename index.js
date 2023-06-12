@@ -13,6 +13,9 @@ const logoRoutes = require("./routes/logoRoutes");
 const footerDescriptionRoutes = require("./routes/footerDescriptionRoutes");
 const footerInfoRoutes = require("./routes/footerInfoRoutes");
 const categorySliderRoutes = require("./routes/categorySliderRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
+
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -43,6 +46,7 @@ async function run() {
     const footerDescriptionCollection = db.collection("footerDescription");
     const footerInfoCollection = db.collection("footerInfo");
     const categorySliderCollection = db.collection("categorySlider");
+    const orderCollection = db.collection("orders");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -55,6 +59,26 @@ async function run() {
     app.use(footerDescriptionRoutes(footerDescriptionCollection));
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
+    app.use(orderRoutes(orderCollection));
+
+    app.post('/payment', async (req, res) => {
+
+      const { price } = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: 'eur',
+        amount: price,
+        "payment_method_types": [
+          "card"
+        ],
+      });
+      res.send({
+        status: 'success',
+        clientSecret: paymentIntent.client_secret,
+      });
+    })
+
+
+
   } finally {
   }
 }
