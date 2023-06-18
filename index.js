@@ -14,6 +14,7 @@ const footerDescriptionRoutes = require("./routes/footerDescriptionRoutes");
 const footerInfoRoutes = require("./routes/footerInfoRoutes");
 const categorySliderRoutes = require("./routes/categorySliderRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const userRoutes = require("./routes/userRoutes");
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
 
 
@@ -47,6 +48,7 @@ async function run() {
     const footerInfoCollection = db.collection("footerInfo");
     const categorySliderCollection = db.collection("categorySlider");
     const orderCollection = db.collection("orders");
+    const userCollection = db.collection("users");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -60,6 +62,7 @@ async function run() {
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
     app.use(orderRoutes(orderCollection));
+    app.use(userRoutes(userCollection));
 
     app.post('/payment', async (req, res) => {
 
