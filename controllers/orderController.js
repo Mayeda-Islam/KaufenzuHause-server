@@ -1,17 +1,19 @@
-const getAllOrders = (orderCollection) => (req, res) => {
-    orderCollection
-        .find()
-        .toArray()
-
-        .then((data) => {
-            res.json({
-                status: "success",
-                data: data,
+const getAllOrders = (orderCollection) => async (req, res) => {
+    try {
+        await orderCollection.find().toArray()
+            .then((data) => {
+                res.json({
+                    status: "success",
+                    data: data,
+                });
+            })
+            .catch((error) => {
+                console.error("Error in Orders", error);
             });
-        })
-        .catch((error) => {
-            console.error("Error in Orders", error);
-        });
+    }
+    catch (error) {
+        console.error("Error in Orders", error);
+    }
 }
 
 const createOrder = (orderCollection) => async (req, res) => {
