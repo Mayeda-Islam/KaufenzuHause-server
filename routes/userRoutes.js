@@ -14,6 +14,10 @@ module.exports = (userCollection) => {
     "/users/change-password",
     userController.changePassword(userCollection)
   );
+  router.patch(
+    "/users/update-profile/:id",
+    userController.updateUserProfile(userCollection)
+  );
 
   return router;
 };

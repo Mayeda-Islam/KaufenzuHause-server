@@ -176,6 +176,7 @@ const loginUser = (userCollection) => async (req, res) => {
     res.send({
       status: "success",
       data: {
+        _id: user?._id,
         fullName: user?.fullName,
         email: user?.email,
         jwtToken: user?.jwtToken,
@@ -195,7 +196,6 @@ const changePassword = (userCollection) => async (req, res) => {
 
   try {
     const user = await userCollection.findOne({ _id: new ObjectId(_id) });
-
     const isPasswordMatch = await bcrypt.compare(oldPassword, user?.password);
 
     if (!isPasswordMatch) {
@@ -225,10 +225,37 @@ const changePassword = (userCollection) => async (req, res) => {
   }
 };
 
+const updateUserProfile = (userCollection) => async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+  const filter = { _id: new ObjectId(id) };
+
+  await userCollection.updateOne(filter, {
+    $set: updatedData,
+  });
+  const user = await userCollection.findOne(filter);
+  try {
+    res.send({
+      status: "success",
+      message: "Your Profile is successfully updated",
+      data: user
+    });
+  }
+  catch (error) {
+    console.log(error);
+    res.send({
+      status: 'fail',
+      message: 'Can not update profile'
+    })
+  }
+}
+
+
 module.exports = {
   registerUser,
   getAllUsers,
   getAUserByIdentifier,
   loginUser,
   changePassword,
+  updateUserProfile
 };
