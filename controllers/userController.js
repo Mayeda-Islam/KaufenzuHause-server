@@ -11,7 +11,7 @@ const generateJWT = (_email) => {
 };
 
 const registerUser = (userCollection) => async (req, res) => {
-  const { fullName, gender, email, phoneNumber, password } = req.body;
+  const { fullName, gender, email, phoneNumber, password, role } = req.body;
   try {
     if (!validator.isEmail(email)) {
       return res.send({
@@ -54,6 +54,7 @@ const registerUser = (userCollection) => async (req, res) => {
       phoneNumber,
       password: hashPassword,
       jwtToken,
+      role
     });
 
     const newUser = await userCollection.findOne(
@@ -66,6 +67,7 @@ const registerUser = (userCollection) => async (req, res) => {
       data: newUser,
     });
   } catch (error) {
+    console.log(error);
     res.send({
       status: "failed",
       message: "Failed to create user",
@@ -177,6 +179,7 @@ const loginUser = (userCollection) => async (req, res) => {
         fullName: user?.fullName,
         email: user?.email,
         jwtToken: user?.jwtToken,
+        role: user?.role
       },
     });
   } catch (error) {
