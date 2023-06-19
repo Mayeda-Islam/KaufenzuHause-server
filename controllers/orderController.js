@@ -1,4 +1,4 @@
-const getAllOrders = (orderCollection) => async (req, res) => {
+const getAllOrders = (orderCollection, productsCollection) => async (req, res) => {
     try {
         await orderCollection.find().toArray()
             .then((data) => {
@@ -16,8 +16,7 @@ const getAllOrders = (orderCollection) => async (req, res) => {
     }
 }
 
-const createOrder = (orderCollection) => async (req, res) => {
-
+const createOrder = (orderCollection, productsCollection) => async (req, res) => {
     const payment = req.body;
 
     const result = await orderCollection.insertOne(payment)

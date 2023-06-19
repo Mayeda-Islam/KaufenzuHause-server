@@ -61,7 +61,7 @@ async function run() {
     app.use(footerDescriptionRoutes(footerDescriptionCollection));
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
-    app.use(orderRoutes(orderCollection));
+    app.use(orderRoutes(orderCollection, productsCollection));
     app.use(userRoutes(userCollection));
 
     app.post("/payment", async (req, res) => {
