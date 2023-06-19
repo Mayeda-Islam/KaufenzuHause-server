@@ -1,7 +1,9 @@
 Create user:
 {
   "fullName": "Jahid Hasan",
+  "gender": "male",
   "email": "jahidhasan64842@gmail.com",
+  "phoneNumber": "01774266484",
   "password": "Jahid@123"
 }
 

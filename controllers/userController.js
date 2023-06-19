@@ -11,7 +11,7 @@ const generateJWT = (_email) => {
 };
 
 const registerUser = (userCollection) => async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { fullName, gender, email, phoneNumber, password } = req.body;
   try {
     if (!validator.isEmail(email)) {
       return res.send({
@@ -49,7 +49,9 @@ const registerUser = (userCollection) => async (req, res) => {
 
     await userCollection.insertOne({
       fullName,
+      gender,
       email,
+      phoneNumber,
       password: hashPassword,
       jwtToken,
     });
