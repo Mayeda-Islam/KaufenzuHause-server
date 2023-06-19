@@ -1,15 +1,15 @@
-module.exports = (orderCollection) => {
+module.exports = (orderCollection, productsCollection) => {
     const express = require("express");
     const router = express.Router();
     const orderController = require("../controllers/orderController");
 
     router.get(
         "/orders",
-        orderController.getAllOrders(orderCollection)
+        orderController.getAllOrders(orderCollection, productsCollection)
     );
     router.post(
         "/order",
-        orderController.createOrder(orderCollection)
+        orderController.createOrder(orderCollection, productsCollection)
     );
 
 
