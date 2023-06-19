@@ -94,9 +94,15 @@ const getAUserByIdentifier = (userCollection) => async (req, res) => {
   try {
     let user;
     if (ObjectId.isValid(identifier)) {
-      user = await userCollection.findOne({ _id: new ObjectId(identifier) });
+      user = await userCollection.findOne(
+        { _id: new ObjectId(identifier) },
+        { projection: { password: 0 } }
+      );
     } else {
-      user = await userCollection.findOne({ email: identifier });
+      user = await userCollection.findOne(
+        { email: identifier },
+        { projection: { password: 0 } }
+      );
     }
 
     if (user) {
@@ -121,7 +127,7 @@ const getAUserByIdentifier = (userCollection) => async (req, res) => {
 const loginUser = (userCollection) => async (req, res) => {
   const { email, password } = req.body;
   try {
-    // Optional checking
+    // Optional checking start (Check data validity before database hit)
     if (!validator.isEmail(email)) {
       return res.send({
         status: "fail",
@@ -132,19 +138,18 @@ const loginUser = (userCollection) => async (req, res) => {
     if (password.length < 7) {
       return res.send({
         status: "fail",
-        message: "Password should be 8 characters or more",
+        message: "Incorrect password",
       });
     }
 
     if (!validator.isStrongPassword(password)) {
       return res.send({
         status: "fail",
-        message:
-          "Please add at least one lowercase, uppercase, numbers, and symbols",
+        message: "Incorrect password",
       });
     }
 
-    //
+    // Option checking end
 
     const user = await userCollection.findOne({ email: email });
 
@@ -180,9 +185,45 @@ const loginUser = (userCollection) => async (req, res) => {
   }
 };
 
+const changePassword = (userCollection) => async (req, res) => {
+  const { _id, oldPassword, newPassword } = req.body;
+
+  try {
+    const user = await userCollection.findOne({ _id: new ObjectId(_id) });
+
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user?.password);
+
+    if (!isPasswordMatch) {
+      return res.send({
+        status: "fail",
+        message: "Old password is not correct",
+      });
+    }
+
+    const newHashPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password with newHashPassword
+    await userCollection.updateOne(
+      { _id: user._id },
+      { $set: { password: newHashPassword } }
+    );
+
+    res.send({
+      status: "success",
+      message: "Your password is updated",
+    });
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   getAllUsers,
   getAUserByIdentifier,
   loginUser,
+  changePassword,
 };

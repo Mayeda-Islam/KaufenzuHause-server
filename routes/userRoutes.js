@@ -10,6 +10,10 @@ module.exports = (userCollection) => {
     userController.getAUserByIdentifier(userCollection)
   );
   router.post("/users/login", userController.loginUser(userCollection));
+  router.patch(
+    "/users/change-password",
+    userController.changePassword(userCollection)
+  );
 
   return router;
 };

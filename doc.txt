@@ -1,0 +1,19 @@
+Create user:
+{
+  "fullName": "Jahid Hasan",
+  "email": "jahidhasan64842@gmail.com",
+  "password": "Jahid@123"
+}
+
+Login user;
+{
+  "email": "jahidhasan64842@gmail.com",
+  "password": "Jahid#123"
+}
+
+Change password:
+{
+  "_id": "6490069a3bc59364471ced4ca",
+  "oldPassword": "Jahid@123",
+  "newPassword": "Jahid#123"
+}
