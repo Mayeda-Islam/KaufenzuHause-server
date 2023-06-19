@@ -17,7 +17,6 @@ const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
 
-
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -27,8 +26,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("image"));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bgqrgmy.mongodb.net/?retryWrites=true&w=majority`;
+const uri2 = "mongodb://127.0.0.1:27017";
 
-const client = new MongoClient(uri, {
+const client = new MongoClient(uri2, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
@@ -64,24 +64,18 @@ async function run() {
     app.use(orderRoutes(orderCollection));
     app.use(userRoutes(userCollection));
 
-    app.post('/payment', async (req, res) => {
-
+    app.post("/payment", async (req, res) => {
       const { price } = req.body;
       const paymentIntent = await stripe.paymentIntents.create({
-        currency: 'eur',
+        currency: "eur",
         amount: price,
-        "payment_method_types": [
-          "card"
-        ],
+        payment_method_types: ["card"],
       });
       res.send({
-        status: 'success',
+        status: "success",
         clientSecret: paymentIntent.client_secret,
       });
-    })
-
-
-
+    });
   } finally {
   }
 }
@@ -96,5 +90,4 @@ app.listen(port, () => {
   console.log("KaifenzuHause Server running on Port : ", port);
 });
 
-
-module.exports = app
+module.exports = app;
