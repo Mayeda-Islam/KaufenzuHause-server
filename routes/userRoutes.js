@@ -33,7 +33,10 @@ module.exports = (userCollection, otpCollection, forgetOTPCollection) => {
   );
   router.patch(
     "/users/updatePassword",
-    userController.updatePasswordByForgetOTP(userCollection)
+    userController.updatePasswordByForgetOTP(
+      userCollection,
+      forgetOTPCollection
+    )
   );
 
   return router;

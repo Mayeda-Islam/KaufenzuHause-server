@@ -233,14 +233,15 @@ const updateUserProfile = (userCollection) => async (req, res) => {
   const { email } = req.params;
   const updatedData = req.body;
 
-  await userCollection.updateOne(
-    { email },
-    {
-      $set: updatedData,
-    }
-  );
-  const user = await userCollection.findOne({ email });
   try {
+    await userCollection.updateOne(
+      { email },
+      {
+        $set: updatedData,
+      }
+    );
+    const user = await userCollection.findOne({ email });
+
     res.send({
       status: "success",
       message: "Your Profile is successfully updated",
@@ -424,50 +425,55 @@ const verifyForgetOTP = (forgetOTPCollection) => async (req, res) => {
   }
 };
 
-const updatePasswordByForgetOTP = (userCollection) => async (req, res) => {
-  const { isForgetOTPMatch, email, newPassword } = req.body;
-  try {
-    if (!isForgetOTPMatch) {
+const updatePasswordByForgetOTP =
+  (userCollection, forgetOTPCollection) => async (req, res) => {
+    const { isForgetOTPMatch, email, newPassword } = req.body;
+    try {
+      if (!isForgetOTPMatch) {
+        return res.send({
+          status: "fail",
+          message: "You cann't able to update password",
+        });
+      }
+
+      if (newPassword.length < 8) {
+        return res.send({
+          status: "fail",
+          message: "Password should have 8 characters",
+        });
+      }
+
+      if (!validator.isStrongPassword(newPassword)) {
+        return res.send({
+          status: "fail",
+          message:
+            "Please add at least one lowercase, uppercase, numbers, and symbols",
+        });
+      }
+
+      const newHashPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      // Update password with newHashPassword
+      await userCollection.updateOne(
+        { email },
+        { $set: { password: newHashPassword, isVerified: true } }
+      );
+
+      await forgetOTPCollection.deleteMany({
+        email,
+      });
+
+      res.send({
+        status: "success",
+        message: "Password updated successfully",
+      });
+    } catch (error) {
       return res.send({
         status: "fail",
-        message: "You cann't able to update password",
+        message: "Failed to update password",
       });
     }
-
-    if (newPassword.length < 8) {
-      return res.send({
-        status: "fail",
-        message: "Password should have 8 characters",
-      });
-    }
-
-    if (!validator.isStrongPassword(newPassword)) {
-      return res.send({
-        status: "fail",
-        message:
-          "Please add at least one lowercase, uppercase, numbers, and symbols",
-      });
-    }
-
-    const newHashPassword = await bcrypt.hash(newPassword, saltRounds);
-
-    // Update password with newHashPassword
-    await userCollection.updateOne(
-      { email },
-      { $set: { password: newHashPassword } }
-    );
-
-    res.send({
-      status: "success",
-      message: "Password updated successfully",
-    });
-  } catch (error) {
-    return res.send({
-      status: "fail",
-      message: "Failed to update password",
-    });
-  }
-};
+  };
 
 module.exports = {
   registerUser,
