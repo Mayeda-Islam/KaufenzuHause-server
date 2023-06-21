@@ -95,21 +95,13 @@ const getAllUsers = (userCollection) => async (req, res) => {
   }
 };
 
-const getAUserByIdentifier = (userCollection) => async (req, res) => {
-  const { identifier } = req.params;
+const getAUserByEmail = (userCollection) => async (req, res) => {
+  const { email } = req.params;
   try {
-    let user;
-    if (ObjectId.isValid(identifier)) {
-      user = await userCollection.findOne(
-        { _id: new ObjectId(identifier) },
-        { projection: { password: 0 } }
-      );
-    } else {
-      user = await userCollection.findOne(
-        { email: identifier },
-        { projection: { password: 0 } }
-      );
-    }
+    const user = await userCollection.findOne(
+      { email },
+      { projection: { password: 0 } }
+    );
 
     if (user) {
       res.send({
@@ -179,10 +171,7 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
       // Send OTP for validation
       const response = await sendOTPVerificationEmail(
         otpCollection,
-        {
-          _id: user?._id,
-          email: user?.email,
-        },
+        user?.email,
         res
       );
 
@@ -192,7 +181,6 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
     res.send({
       status: "success",
       data: {
-        _id: user?._id,
         fullName: user?.fullName,
         email: user?.email,
         jwtToken: user?.jwtToken,
@@ -208,10 +196,10 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
 };
 
 const changePassword = (userCollection) => async (req, res) => {
-  const { _id, oldPassword, newPassword } = req.body;
+  const { email, oldPassword, newPassword } = req.body;
 
   try {
-    const user = await userCollection.findOne({ _id: new ObjectId(_id) });
+    const user = await userCollection.findOne({ email });
     const isPasswordMatch = await bcrypt.compare(oldPassword, user?.password);
 
     if (!isPasswordMatch) {
@@ -225,7 +213,7 @@ const changePassword = (userCollection) => async (req, res) => {
 
     // Update password with newHashPassword
     await userCollection.updateOne(
-      { _id: user._id },
+      { email },
       { $set: { password: newHashPassword } }
     );
 
@@ -242,15 +230,18 @@ const changePassword = (userCollection) => async (req, res) => {
 };
 
 const updateUserProfile = (userCollection) => async (req, res) => {
-  const { id } = req.params;
+  const { email } = req.params;
   const updatedData = req.body;
-  const filter = { _id: new ObjectId(id) };
 
-  await userCollection.updateOne(filter, {
-    $set: updatedData,
-  });
-  const user = await userCollection.findOne(filter);
   try {
+    await userCollection.updateOne(
+      { email },
+      {
+        $set: updatedData,
+      }
+    );
+    const user = await userCollection.findOne({ email });
+
     res.send({
       status: "success",
       message: "Your Profile is successfully updated",
@@ -266,9 +257,10 @@ const updateUserProfile = (userCollection) => async (req, res) => {
 };
 
 const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
-  const { userId, otp } = req.body;
+  const { email, otp } = req.body;
+
   try {
-    if (!userId || !otp) {
+    if (!email || !otp) {
       return res.send({
         status: "fail",
         message: "Empty details are not allowed",
@@ -276,7 +268,7 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
     }
 
     const userOTPRecords = await otpCollection
-      .find({ userId: new ObjectId(userId) }, { projection: { _id: 0 } })
+      .find({ email }, { projection: { _id: 0 } })
       .toArray();
 
     userOTPRecords.reverse();
@@ -308,13 +300,10 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
       });
     }
 
-    await userCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { isVerified: true } }
-    );
+    await userCollection.updateOne({ email }, { $set: { isVerified: true } });
 
     await otpCollection.deleteMany({
-      userId: new ObjectId(userId),
+      email,
     });
 
     res.send({
@@ -330,12 +319,172 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
   }
 };
 
+const resendOTP = (otpCollection) => async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.send({
+        status: "fail",
+        message: "Empty email address",
+      });
+    }
+
+    // Send OTP for validation
+    const response = await sendOTPVerificationEmail(otpCollection, email, res);
+
+    return response;
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message: "Failed to resend OTP",
+    });
+  }
+};
+
+const forgetPassword = (forgetOTPCollection) => async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.send({
+        status: "fail",
+        message: "Empty email address",
+      });
+    }
+
+    // Send OTP for forget password
+    const response = await sendOTPVerificationEmail(
+      forgetOTPCollection,
+      email,
+      res
+    );
+
+    return response;
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message: "Failed to resend OTP",
+    });
+  }
+};
+
+const verifyForgetOTP = (forgetOTPCollection) => async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    if (!email || !otp) {
+      return res.send({
+        status: "fail",
+        message: "Empty details are not allowed",
+      });
+    }
+
+    const forgetOTPRecords = await forgetOTPCollection
+      .find({ email }, { projection: { _id: 0 } })
+      .toArray();
+
+    forgetOTPRecords.reverse();
+
+    if (forgetOTPRecords.length <= 0) {
+      return res.send({
+        status: "fail",
+        message: "There is no forget password request",
+      });
+    }
+
+    const { expiresAt } = forgetOTPRecords[0];
+    const hashedOTP = forgetOTPRecords[0]?.otp;
+
+    if (expiresAt < Date.now()) {
+      return res.send({
+        status: "fail",
+        message: "Forget OTP code has expired, please request again",
+      });
+    }
+
+    const isValidOTP = await bcrypt.compare(otp, hashedOTP);
+
+    if (!isValidOTP) {
+      return res.send({
+        status: "fail",
+        message: "Forget OTP is invalid",
+      });
+    }
+
+    res.send({
+      status: "success",
+      message: "Forget password request approve",
+      isForgetOTPMatch: true,
+    });
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message:
+        "User already verified or not exist, please register or log in 99",
+      isForgetOTPMatch: false,
+    });
+  }
+};
+
+const updatePasswordByForgetOTP =
+  (userCollection, forgetOTPCollection) => async (req, res) => {
+    const { isForgetOTPMatch, email, newPassword } = req.body;
+    try {
+      if (!isForgetOTPMatch) {
+        return res.send({
+          status: "fail",
+          message: "You cann't able to update password",
+        });
+      }
+
+      if (newPassword.length < 8) {
+        return res.send({
+          status: "fail",
+          message: "Password should have 8 characters",
+        });
+      }
+
+      if (!validator.isStrongPassword(newPassword)) {
+        return res.send({
+          status: "fail",
+          message:
+            "Please add at least one lowercase, uppercase, numbers, and symbols",
+        });
+      }
+
+      const newHashPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      // Update password with newHashPassword
+      await userCollection.updateOne(
+        { email },
+        { $set: { password: newHashPassword, isVerified: true } }
+      );
+
+      await forgetOTPCollection.deleteMany({
+        email,
+      });
+
+      res.send({
+        status: "success",
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      return res.send({
+        status: "fail",
+        message: "Failed to update password",
+      });
+    }
+  };
+
 module.exports = {
   registerUser,
   getAllUsers,
-  getAUserByIdentifier,
+  getAUserByEmail,
   loginUser,
   changePassword,
   updateUserProfile,
   verifyOPT,
+  resendOTP,
+  forgetPassword,
+  verifyForgetOTP,
+  updatePasswordByForgetOTP,
 };

@@ -50,6 +50,7 @@ async function run() {
     const orderCollection = db.collection("orders");
     const userCollection = db.collection("users");
     const otpCollection = db.collection("otp");
+    const forgetOTPCollection = db.collection("forgetOTP");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -63,7 +64,7 @@ async function run() {
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
     app.use(orderRoutes(orderCollection, productsCollection));
-    app.use(userRoutes(userCollection, otpCollection));
+    app.use(userRoutes(userCollection, otpCollection, forgetOTPCollection));
 
     app.post("/payment", async (req, res) => {
       const { price } = req.body;
