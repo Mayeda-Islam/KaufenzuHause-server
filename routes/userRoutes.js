@@ -25,6 +25,7 @@ module.exports = (userCollection, otpCollection) => {
     "/users/verifyOTP",
     userController.verifyOPT(userCollection, otpCollection)
   );
+  router.post("/users/resendOTP", userController.resendOTP(otpCollection));
 
   return router;
 };

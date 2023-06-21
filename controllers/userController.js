@@ -179,10 +179,7 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
       // Send OTP for validation
       const response = await sendOTPVerificationEmail(
         otpCollection,
-        {
-          _id: user?._id,
-          email: user?.email,
-        },
+        user?.email,
         res
       );
 
@@ -266,9 +263,10 @@ const updateUserProfile = (userCollection) => async (req, res) => {
 };
 
 const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
-  const { userId, otp } = req.body;
+  const { email, otp } = req.body;
+
   try {
-    if (!userId || !otp) {
+    if (!email || !otp) {
       return res.send({
         status: "fail",
         message: "Empty details are not allowed",
@@ -276,7 +274,7 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
     }
 
     const userOTPRecords = await otpCollection
-      .find({ userId: new ObjectId(userId) }, { projection: { _id: 0 } })
+      .find({ email }, { projection: { _id: 0 } })
       .toArray();
 
     userOTPRecords.reverse();
@@ -308,13 +306,10 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
       });
     }
 
-    await userCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { isVerified: true } }
-    );
+    await userCollection.updateOne({ email }, { $set: { isVerified: true } });
 
     await otpCollection.deleteMany({
-      userId: new ObjectId(userId),
+      email,
     });
 
     res.send({
@@ -330,6 +325,28 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
   }
 };
 
+const resendOTP = (otpCollection) => async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.send({
+        status: "fail",
+        message: "Empty email address",
+      });
+    }
+
+    // Send OTP for validation
+    const response = await sendOTPVerificationEmail(otpCollection, email, res);
+
+    return response;
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message: "Failed to resend OTP",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   getAllUsers,
@@ -338,4 +355,5 @@ module.exports = {
   changePassword,
   updateUserProfile,
   verifyOPT,
+  resendOTP,
 };

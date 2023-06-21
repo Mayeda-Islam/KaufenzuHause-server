@@ -16,7 +16,7 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const sendOTPVerificationEmail = async (otpCollection, { _id, email }, res) => {
+const sendOTPVerificationEmail = async (otpCollection, email, res) => {
   try {
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -30,7 +30,7 @@ const sendOTPVerificationEmail = async (otpCollection, { _id, email }, res) => {
     const hashedOTP = await bcrypt.hash(otp, saltRounds);
 
     await otpCollection.insertOne({
-      userId: _id,
+      email: email,
       otp: hashedOTP,
       createdAt: Date.now(),
       expiresAt: Date.now() + 3600000,
@@ -47,7 +47,6 @@ const sendOTPVerificationEmail = async (otpCollection, { _id, email }, res) => {
           status: "success",
           message: `An OTP verification email has been sent on ${email}`,
           data: {
-            userId: _id,
             email,
           },
         });
