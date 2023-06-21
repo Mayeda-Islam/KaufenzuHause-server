@@ -3,18 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
-
-const nodemailer = require("nodemailer");
-const { v4: uuidv4 } = require("uuid");
-
-var transport = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: "9a957c7f7a2343",
-    pass: "5d7e3db066dc2e",
-  },
-});
+const { sendOTPVerificationEmail } = require("../utils/sendEmail");
 
 const generateJWT = (_email) => {
   const jwtKey = process.env.JWT_SECRET_KEY;
@@ -22,7 +11,7 @@ const generateJWT = (_email) => {
   return jwt.sign({ _email }, jwtKey);
 };
 
-const registerUser = (userCollection, otpCollection) => async (req, res) => {
+const registerUser = (userCollection) => async (req, res) => {
   const { fullName, gender, email, phoneNumber, password, role } = req.body;
   try {
     if (!validator.isEmail(email)) {
@@ -73,13 +62,6 @@ const registerUser = (userCollection, otpCollection) => async (req, res) => {
     const newUser = await userCollection.findOne(
       { email: email },
       { projection: { password: 0 } }
-    );
-
-    // Send OTP for validation
-    await sendOTPVerificationEmail(
-      otpCollection,
-      { _id: newUser?._id, email: newUser?.email },
-      res
     );
 
     res.send({
@@ -148,7 +130,7 @@ const getAUserByIdentifier = (userCollection) => async (req, res) => {
   }
 };
 
-const loginUser = (userCollection) => async (req, res) => {
+const loginUser = (userCollection, otpCollection) => async (req, res) => {
   const { email, password } = req.body;
   try {
     // Optional checking start (Check data validity before database hit)
@@ -191,6 +173,20 @@ const loginUser = (userCollection) => async (req, res) => {
         status: "fail",
         message: "Incorrect password",
       });
+    }
+
+    if (!user?.isVerified) {
+      // Send OTP for validation
+      const response = await sendOTPVerificationEmail(
+        otpCollection,
+        {
+          _id: user?._id,
+          email: user?.email,
+        },
+        res
+      );
+
+      return response;
     }
 
     res.send({
@@ -269,54 +265,70 @@ const updateUserProfile = (userCollection) => async (req, res) => {
   }
 };
 
-// Verification
-
-const sendOTPVerificationEmail = async (otpCollection, { _id, email }, res) => {
+const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
+  const { userId, otp } = req.body;
   try {
-    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    if (!userId || !otp) {
+      return res.send({
+        status: "fail",
+        message: "Empty details are not allowed",
+      });
+    }
 
-    const mailOptions = {
-      from: "salmanshah11062019@gmail.com",
-      to: email,
-      subject: "Verify your email",
-      html: `Please enter <b>${otp}</b> to verify your email`,
-    };
+    const userOTPRecords = await otpCollection
+      .find({ userId: new ObjectId(userId) }, { projection: { _id: 0 } })
+      .toArray();
 
-    const hashedOTP = await bcrypt.hash(otp, saltRounds);
+    userOTPRecords.reverse();
 
-    await otpCollection.insertOne({
-      userId: _id,
-      otp: hashedOTP,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 3600000,
+    if (userOTPRecords.length <= 0) {
+      return res.send({
+        status: "fail",
+        message:
+          "User already verified or not exist, please register or log in",
+      });
+    }
+
+    const { expiresAt } = userOTPRecords[0];
+    const hashedOTP = userOTPRecords[0]?.otp;
+
+    if (expiresAt < Date.now()) {
+      return res.send({
+        status: "fail",
+        message: "OTP code has expired, please request again",
+      });
+    }
+
+    const isValidOTP = await bcrypt.compare(otp, hashedOTP);
+
+    if (!isValidOTP) {
+      return res.send({
+        status: "fail",
+        message: "OTP is invalid",
+      });
+    }
+
+    await userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { isVerified: true } }
+    );
+
+    await otpCollection.deleteMany({
+      userId: new ObjectId(userId),
     });
 
-    transport.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        res.send({
-          status: "fail",
-          message: `Failed to send OTP on ${email}`,
-        });
-      } else {
-        res.send({
-          status: "success",
-          message: `An OTP verification email has been sent on ${email}`,
-          data: {
-            userId: _id,
-            email,
-          },
-        });
-      }
+    res.send({
+      status: "success",
+      message: "User verified successfully",
     });
   } catch (error) {
     res.send({
       status: "fail",
-      message: "Failed to send OTP",
+      message:
+        "User already verified or not exist, please register or log in 99",
     });
   }
 };
-
-//
 
 module.exports = {
   registerUser,
@@ -325,4 +337,5 @@ module.exports = {
   loginUser,
   changePassword,
   updateUserProfile,
+  verifyOPT,
 };
