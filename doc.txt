@@ -2,9 +2,10 @@ Create user:
 {
   "fullName": "Jahid Hasan",
   "gender": "male",
-  "email": "jahidhasan64842@gmail.com",
+  "email": "jahidhasan6484@gmail.com",
   "phoneNumber": "01774266484",
-  "password": "Jahid@123"
+  "password": "Jahid@123",
+  "role": "admin"
 }
 
 Login user;
