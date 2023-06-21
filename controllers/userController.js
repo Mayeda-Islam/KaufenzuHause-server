@@ -4,13 +4,25 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 
+const nodemailer = require("nodemailer");
+const { v4: uuidv4 } = require("uuid");
+
+var transport = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "9a957c7f7a2343",
+    pass: "5d7e3db066dc2e",
+  },
+});
+
 const generateJWT = (_email) => {
   const jwtKey = process.env.JWT_SECRET_KEY;
 
   return jwt.sign({ _email }, jwtKey);
 };
 
-const registerUser = (userCollection) => async (req, res) => {
+const registerUser = (userCollection, otpCollection) => async (req, res) => {
   const { fullName, gender, email, phoneNumber, password, role } = req.body;
   try {
     if (!validator.isEmail(email)) {
@@ -54,12 +66,20 @@ const registerUser = (userCollection) => async (req, res) => {
       phoneNumber,
       password: hashPassword,
       jwtToken,
-      role
+      role,
+      isVerified: false,
     });
 
     const newUser = await userCollection.findOne(
       { email: email },
       { projection: { password: 0 } }
+    );
+
+    // Send OTP for validation
+    await sendOTPVerificationEmail(
+      otpCollection,
+      { _id: newUser?._id, email: newUser?.email },
+      res
     );
 
     res.send({
@@ -180,7 +200,7 @@ const loginUser = (userCollection) => async (req, res) => {
         fullName: user?.fullName,
         email: user?.email,
         jwtToken: user?.jwtToken,
-        role: user?.role
+        role: user?.role,
       },
     });
   } catch (error) {
@@ -238,18 +258,65 @@ const updateUserProfile = (userCollection) => async (req, res) => {
     res.send({
       status: "success",
       message: "Your Profile is successfully updated",
-      data: user
+      data: user,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
     res.send({
-      status: 'fail',
-      message: 'Can not update profile'
-    })
+      status: "fail",
+      message: "Can not update profile",
+    });
   }
-}
+};
 
+// Verification
+
+const sendOTPVerificationEmail = async (otpCollection, { _id, email }, res) => {
+  try {
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const mailOptions = {
+      from: "salmanshah11062019@gmail.com",
+      to: email,
+      subject: "Verify your email",
+      html: `Please enter <b>${otp}</b> to verify your email`,
+    };
+
+    const hashedOTP = await bcrypt.hash(otp, saltRounds);
+
+    await otpCollection.insertOne({
+      userId: _id,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000,
+    });
+
+    transport.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        res.send({
+          status: "fail",
+          message: `Failed to send OTP on ${email}`,
+        });
+      } else {
+        res.send({
+          status: "success",
+          message: `An OTP verification email has been sent on ${email}`,
+          data: {
+            userId: _id,
+            email,
+          },
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      status: "fail",
+      message: "Failed to send OTP",
+    });
+  }
+};
+
+//
 
 module.exports = {
   registerUser,
@@ -257,5 +324,5 @@ module.exports = {
   getAUserByIdentifier,
   loginUser,
   changePassword,
-  updateUserProfile
+  updateUserProfile,
 };

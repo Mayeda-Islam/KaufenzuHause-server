@@ -28,7 +28,7 @@ app.use(express.static("image"));
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bgqrgmy.mongodb.net/?retryWrites=true&w=majority`;
 const uri2 = "mongodb://127.0.0.1:27017";
 
-const client = new MongoClient(uri, {
+const client = new MongoClient(uri2, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
@@ -49,6 +49,7 @@ async function run() {
     const categorySliderCollection = db.collection("categorySlider");
     const orderCollection = db.collection("orders");
     const userCollection = db.collection("users");
+    const otpCollection = db.collection("otp");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -62,7 +63,7 @@ async function run() {
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
     app.use(orderRoutes(orderCollection, productsCollection));
-    app.use(userRoutes(userCollection));
+    app.use(userRoutes(userCollection, otpCollection));
 
     app.post("/payment", async (req, res) => {
       const { price } = req.body;

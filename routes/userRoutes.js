@@ -1,9 +1,12 @@
-module.exports = (userCollection) => {
+module.exports = (userCollection, otpCollection) => {
   const express = require("express");
   const router = express.Router();
   const userController = require("../controllers/userController");
 
-  router.post("/users/register", userController.registerUser(userCollection));
+  router.post(
+    "/users/register",
+    userController.registerUser(userCollection, otpCollection)
+  );
   router.get("/users", userController.getAllUsers(userCollection));
   router.get(
     "/users/:identifier",
