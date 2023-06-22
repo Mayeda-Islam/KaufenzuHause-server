@@ -20,6 +20,45 @@ const getAllOrders =
         }
     };
 
+
+const getOrdersById = (orderCollection) => async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const filter = { _id: new ObjectId(id) };
+        const data = await orderCollection.findOne(filter);
+        res.send({
+            status: "success",
+            data: data,
+        });
+    }
+    catch {
+        res.send({
+            status: "fail",
+            message: 'Can not get any Product',
+        });
+    }
+
+}
+const getOrdersByStatus = (orderCollection) => async (req, res) => {
+    const status = req.params.status;
+
+    try {
+        const filter = { status: status };
+        const data = await orderCollection.find(filter).toArray();
+        res.send({
+            status: "success",
+            data: data,
+        });
+    }
+    catch {
+        res.send({
+            status: "fail",
+            message: 'Can not get any Product',
+        });
+    }
+
+}
 const createOrder =
     (orderCollection, productsCollection) => async (req, res) => {
         const payment = req.body;
@@ -64,9 +103,39 @@ const createOrder =
         }
     };
 
+
+const updateOrderById = (orderCollection) => async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const updatedData = req.body;
+        const filter = { _id: new ObjectId(id) };
+
+        await orderCollection.updateOne(filter, {
+            $set: updatedData,
+        });
+
+        const data = await orderCollection.find({}).toArray();
+        res.send({
+            status: "success",
+            message: "Data updated successfully!",
+            data: data,
+        });
+    }
+    catch {
+        res.send({
+            status: "fail",
+            message: "Data did not updated",
+        });
+    }
+}
+
 module.exports = createOrder;
 
 module.exports = {
     getAllOrders,
     createOrder,
+    getOrdersById,
+    updateOrderById,
+    getOrdersByStatus
 };
