@@ -47,6 +47,7 @@ const sendOTPVerificationEmail = async (collection, email, res) => {
           status: "success",
           message: `An OTP verification email has been sent on ${email}`,
           data: {
+            isVerified: false,
             email,
           },
         });

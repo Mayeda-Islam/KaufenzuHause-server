@@ -66,6 +66,7 @@ const registerUser = (userCollection) => async (req, res) => {
 
     res.send({
       status: "success",
+
       data: newUser,
     });
   } catch (error) {
@@ -185,6 +186,7 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
         email: user?.email,
         jwtToken: user?.jwtToken,
         role: user?.role,
+        isVerified: true
       },
     });
   } catch (error) {
@@ -306,15 +308,25 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
       email,
     });
 
+    const user = await userCollection.findOne({ email: email });
+
     res.send({
       status: "success",
       message: "User verified successfully",
+      data: {
+        fullName: user?.fullName,
+        email: user?.email,
+        jwtToken: user?.jwtToken,
+        role: user?.role,
+        isVerified: true
+      },
     });
   } catch (error) {
     res.send({
       status: "fail",
       message:
         "User already verified or not exist, please register or log in 99",
+
     });
   }
 };
@@ -369,7 +381,6 @@ const forgetPassword = (forgetOTPCollection) => async (req, res) => {
 
 const verifyForgetOTP = (forgetOTPCollection) => async (req, res) => {
   const { email, otp } = req.body;
-
   try {
     if (!email || !otp) {
       return res.send({
@@ -407,6 +418,7 @@ const verifyForgetOTP = (forgetOTPCollection) => async (req, res) => {
       return res.send({
         status: "fail",
         message: "Forget OTP is invalid",
+        isForgetOTPMatch: false,
       });
     }
 
@@ -428,11 +440,13 @@ const verifyForgetOTP = (forgetOTPCollection) => async (req, res) => {
 const updatePasswordByForgetOTP =
   (userCollection, forgetOTPCollection) => async (req, res) => {
     const { isForgetOTPMatch, email, newPassword } = req.body;
+
+    console.log(isForgetOTPMatch, email, newPassword);
     try {
       if (!isForgetOTPMatch) {
         return res.send({
           status: "fail",
-          message: "You cann't able to update password",
+          message: "You can't able to update password",
         });
       }
 
