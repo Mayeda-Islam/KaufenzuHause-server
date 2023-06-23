@@ -20,12 +20,11 @@ const createProduct = (productsCollection) => (req, res) => {
   const productData = req.body;
 
   productsCollection.insertOne(productData);
-  const allData = productsCollection.find().toArray()
+  const allData = productsCollection.find().toArray();
   res.send({
     status: "success",
     data: allData,
   });
-
 };
 
 const getProductsByParams = (productsCollection) => async (req, res) => {
@@ -39,13 +38,27 @@ const getProductsByParams = (productsCollection) => async (req, res) => {
   });
 };
 
-
 const getProductsById = (productsCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
   const data = await productsCollection.findOne(filter);
   res.send({
     status: "success",
+    data: data,
+  });
+};
+const updateProduct = (productsCollection) => async (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+  const filter = { _id: new ObjectId(id) };
+
+  const updatedProduct = await productsCollection.updateOne(filter, {
+    $set: updatedData,
+  });
+  const data = await productsCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    message: "data updated",
     data: data,
   });
 };
@@ -65,5 +78,6 @@ module.exports = {
   getAllProducts,
   deleteProduct,
   getProductsByParams,
-  getProductsById
+  getProductsById,
+  updateProduct,
 };

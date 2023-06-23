@@ -28,15 +28,28 @@ const createCategory = (categoryCollection) => async (req, res) => {
 
 }
 const getCategoryById = (categoryCollection) => async (req, res) => {
-  const id = req.params.id;
-  const filter = { _id: new ObjectId(id) };
-  const data = await categoryCollection.findOne( filter );
-  res.send({
-    status: "success",
-    data: data,
-  });
+  try {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const data = await categoryCollection.findOne(filter);
+    res.send({
+      status: "success",
+      data: data,
+    });
+  }
+  catch (error) {
+    console.log(error);
+    res.send({
+      status: "fail",
+      message: 'Something Went Wrong'
+    });
+  }
 
-};
+}
+
+
+
+
 const deleteCategory = (categoryCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -53,4 +66,5 @@ module.exports = {
   getCategoryById,
   createCategory,
   deleteCategory,
-};
+
+}

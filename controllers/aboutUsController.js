@@ -41,9 +41,3 @@ module.exports = {
   getAboutUs,
   createAboutUs,
 };
-
-{
-  /* <Badge badgeContent={cart?.length} color="primary">
-<CgShoppingCart color="action" />
-</Badge> */
-}

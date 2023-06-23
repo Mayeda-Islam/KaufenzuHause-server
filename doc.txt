@@ -1,0 +1,46 @@
+Create user:
+{
+  "fullName": "Jahid Hasan",
+  "gender": "male",
+  "email": "jahidhasan6484@gmail.com",
+  "phoneNumber": "01774266484",
+  "password": "Jahid@123",
+  "role": "admin"
+}
+
+Login user;
+{
+  "email": "jahidhasan64842@gmail.com",
+  "password": "Jahid@123"
+}
+
+Change password:
+{
+  "email": "jahidhasan6484@gmail.com",
+  "oldPassword": "Jahid@123",
+  "newPassword": "Jahid#123"
+}
+
+Verify Password:
+{
+  "email": "jahidhasan6484@gmail.com",
+  "otp": "1677"
+}
+
+Forget Password:
+{
+  "email": "jahidhasan6484@gmail.com"
+}
+
+Verify Forget OTP:
+{
+  "email": "jahidhasan6484@gmail.com",
+  "otp": "1677"
+}
+
+Update Password By Forget OTP:
+{
+  "isForgetOTPMatch": true,
+  "email": "jahidhasan6484@gmail.com",
+  "newPassword": "3909"
+}

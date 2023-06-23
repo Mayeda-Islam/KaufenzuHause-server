@@ -8,13 +8,26 @@ module.exports = (productsCollection) => {
     productsController.getAllProducts(productsCollection)
   );
 
-  router.get("/product/:categoryTitle", productsController.getProductsByParams(productsCollection));
+  router.get(
+    "/product/:categoryTitle",
+    productsController.getProductsByParams(productsCollection)
+  );
 
-  router.get("/products/:id", productsController.getProductsById(productsCollection));
+  router.get(
+    "/products/:id",
+    productsController.getProductsById(productsCollection)
+  );
 
   router.post("/product", productsController.createProduct(productsCollection));
+  router.patch(
+    "/product/:id",
+    productsController.updateProduct(productsCollection)
+  );
 
-  router.delete("/product/:id", productsController.deleteProduct(productsCollection));
+  router.delete(
+    "/product/:id",
+    productsController.deleteProduct(productsCollection)
+  );
 
   return router;
 };

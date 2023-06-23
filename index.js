@@ -14,8 +14,8 @@ const footerDescriptionRoutes = require("./routes/footerDescriptionRoutes");
 const footerInfoRoutes = require("./routes/footerInfoRoutes");
 const categorySliderRoutes = require("./routes/categorySliderRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const userRoutes = require("./routes/userRoutes");
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
-
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("image"));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bgqrgmy.mongodb.net/?retryWrites=true&w=majority`;
+const uri2 = "mongodb://127.0.0.1:27017";
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -47,6 +48,9 @@ async function run() {
     const footerInfoCollection = db.collection("footerInfo");
     const categorySliderCollection = db.collection("categorySlider");
     const orderCollection = db.collection("orders");
+    const userCollection = db.collection("users");
+    const otpCollection = db.collection("otp");
+    const forgetOTPCollection = db.collection("forgetOTP");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -59,26 +63,21 @@ async function run() {
     app.use(footerDescriptionRoutes(footerDescriptionCollection));
     app.use(footerInfoRoutes(footerInfoCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
-    app.use(orderRoutes(orderCollection));
+    app.use(orderRoutes(orderCollection, productsCollection));
+    app.use(userRoutes(userCollection, otpCollection, forgetOTPCollection));
 
-    app.post('/payment', async (req, res) => {
-
+    app.post("/payment", async (req, res) => {
       const { price } = req.body;
       const paymentIntent = await stripe.paymentIntents.create({
-        currency: 'eur',
+        currency: "eur",
         amount: price,
-        "payment_method_types": [
-          "card"
-        ],
+        payment_method_types: ["card"],
       });
       res.send({
-        status: 'success',
+        status: "success",
         clientSecret: paymentIntent.client_secret,
       });
-    })
-
-
-
+    });
   } finally {
   }
 }
@@ -93,5 +92,4 @@ app.listen(port, () => {
   console.log("KaifenzuHause Server running on Port : ", port);
 });
 
-
-module.exports = app
+module.exports = app;
