@@ -28,8 +28,6 @@ module.exports = (productsCollection) => {
     "/product/:id",
     productsController.deleteProduct(productsCollection)
   );
-<<<<<<< HEAD
-=======
   router.patch(
     "/product/review",
     productsController.addReview(productsCollection)
@@ -39,7 +37,6 @@ module.exports = (productsCollection) => {
     "/products/:productId/reviews/:reviewIndex",
     productsController.deleteReview(productsCollection)
   );
->>>>>>> 92922ba1208fe1f5aa4f3ac931b6ddce49d1c263
 
   return router;
 };

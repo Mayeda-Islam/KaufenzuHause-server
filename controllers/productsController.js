@@ -176,4 +176,6 @@ module.exports = {
   getProductsByParams,
   getProductsById,
   updateProduct,
+  deleteReview,
+  addReview,
 };
