@@ -186,7 +186,7 @@ const loginUser = (userCollection, otpCollection) => async (req, res) => {
         email: user?.email,
         jwtToken: user?.jwtToken,
         role: user?.role,
-        isVerified: true
+        isVerified: true,
       },
     });
   } catch (error) {
@@ -318,7 +318,7 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
         email: user?.email,
         jwtToken: user?.jwtToken,
         role: user?.role,
-        isVerified: true
+        isVerified: true,
       },
     });
   } catch (error) {
@@ -326,7 +326,6 @@ const verifyOPT = (userCollection, otpCollection) => async (req, res) => {
       status: "fail",
       message:
         "User already verified or not exist, please register or log in 99",
-
     });
   }
 };
@@ -489,6 +488,22 @@ const updatePasswordByForgetOTP =
     }
   };
 
+const getBulkUser = (userCollection) => async (req, res) => {
+  const { emails } = req.query;
+  try {
+    const emailList = emails.split(",");
+
+    const users = await userCollection
+      .find({ email: { $in: emailList } })
+      .toArray();
+
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to fetch user information" });
+  }
+};
+
 module.exports = {
   registerUser,
   getAllUsers,
@@ -501,4 +516,5 @@ module.exports = {
   forgetPassword,
   verifyForgetOTP,
   updatePasswordByForgetOTP,
+  getBulkUser,
 };
