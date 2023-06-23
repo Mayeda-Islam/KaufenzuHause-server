@@ -40,6 +40,28 @@ const getOrdersById = (orderCollection) => async (req, res) => {
     }
 
 }
+const getOrdersByEmail = (orderCollection) => async (req, res) => {
+    const email = req.params.email;
+
+    try {
+        const filter = { 'userInfo.email': email };
+        const data = await orderCollection.find(filter).toArray();
+        res.send({
+            status: "success",
+            data: data,
+        });
+    }
+    catch {
+        res.send({
+            status: "fail",
+            message: 'Can not get any Product',
+        });
+    }
+
+}
+
+
+
 const getOrdersByStatus = (orderCollection) => async (req, res) => {
     const status = req.params.status;
 
@@ -136,6 +158,7 @@ module.exports = {
     getAllOrders,
     createOrder,
     getOrdersById,
+    getOrdersByEmail,
     updateOrderById,
     getOrdersByStatus
 };

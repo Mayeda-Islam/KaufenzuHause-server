@@ -18,6 +18,10 @@ module.exports = (orderCollection, productsCollection) => {
     orderController.getOrdersById(orderCollection)
   );
   router.get(
+    "/myOrders/:email",
+    orderController.getOrdersByEmail(orderCollection)
+  );
+  router.get(
     "/orders/status/:status",
     orderController.getOrdersByStatus(orderCollection)
   );
