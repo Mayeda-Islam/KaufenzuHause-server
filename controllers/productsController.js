@@ -52,7 +52,7 @@ const updateProduct = (productsCollection) => async (req, res) => {
   const updatedData = req.body;
   const filter = { _id: new ObjectId(id) };
 
-  const updatedProduct = await productsCollection.updateOne(filter, {
+  await productsCollection.updateOne(filter, {
     $set: updatedData,
   });
   const data = await productsCollection.find({}).toArray();
