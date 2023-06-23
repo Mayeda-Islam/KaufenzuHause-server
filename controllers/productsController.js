@@ -50,6 +50,9 @@ const getProductsById = (productsCollection) => async (req, res) => {
   });
 };
 
+
+
+
 const deleteProduct = (productsCollection) => async (req, res) => {
   const id = req.params.id;
   const filter = { _id: new ObjectId(id) };
@@ -65,5 +68,5 @@ module.exports = {
   getAllProducts,
   deleteProduct,
   getProductsByParams,
-  getProductsById
+  getProductsById,
 };
