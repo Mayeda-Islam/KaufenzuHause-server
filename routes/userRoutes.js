@@ -39,5 +39,10 @@ module.exports = (userCollection, otpCollection, forgetOTPCollection) => {
     )
   );
 
+  router.get(
+    "/users/reviews/bulkUser",
+    userController.getBulkUser(userCollection)
+  );
+
   return router;
 };
