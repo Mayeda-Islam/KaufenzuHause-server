@@ -47,6 +47,21 @@ const getProductsById = (productsCollection) => async (req, res) => {
     data: data,
   });
 };
+const updateProduct = (productsCollection) => async (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+  const filter = { _id: new ObjectId(id) };
+
+  const updatedProduct = await productsCollection.updateOne(filter, {
+    $set: updatedData,
+  });
+  const data = await productsCollection.find({}).toArray();
+  res.send({
+    status: "success",
+    message: "data updated",
+    data: data,
+  });
+};
 
 const deleteProduct = (productsCollection) => async (req, res) => {
   const id = req.params.id;
@@ -160,6 +175,7 @@ module.exports = {
   deleteProduct,
   getProductsByParams,
   getProductsById,
-  addReview,
+  updateProduct,
   deleteReview,
+  addReview,
 };

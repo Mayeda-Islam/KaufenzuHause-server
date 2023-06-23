@@ -19,6 +19,10 @@ module.exports = (productsCollection) => {
   );
 
   router.post("/product", productsController.createProduct(productsCollection));
+  router.patch(
+    "/product/:id",
+    productsController.updateProduct(productsCollection)
+  );
 
   router.delete(
     "/product/:id",
