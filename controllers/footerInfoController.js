@@ -12,7 +12,7 @@ const getFooterInfo = (footerInfoCollection) => (req, res) => {
       });
     })
     .catch((error) => {
-      console.error("Error in Category", error);
+      console.error("Error in Footer info", error);
     });
 };
 
@@ -31,7 +31,7 @@ const createFooterInfo = (footerInfoCollection) => (req, res) => {
       });
     })
     .catch((error) => {
-      console.error("category Error:", error);
+      console.error("Footer info Error:", error);
     });
 };
 
