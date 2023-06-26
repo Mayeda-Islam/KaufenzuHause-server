@@ -15,6 +15,8 @@ const footerInfoRoutes = require("./routes/footerInfoRoutes");
 const categorySliderRoutes = require("./routes/categorySliderRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
+const socialMediaRoutes = require("./routes/socialMediaRoutes");
+const refundRoutes = require("./routes/refundRoutes");
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
 
 const app = express();
@@ -25,7 +27,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("image"));
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bgqrgmy.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.lfgwdee.mongodb.net/?retryWrites=true&w=majority`;
 const uri2 = "mongodb://127.0.0.1:27017";
 
 const client = new MongoClient(uri, {
@@ -51,6 +53,8 @@ async function run() {
     const userCollection = db.collection("users");
     const otpCollection = db.collection("otp");
     const forgetOTPCollection = db.collection("forgetOTP");
+    const socialMediaCollection = db.collection("socialMedia");
+    const refundCollection = db.collection("refundPolicy");
 
     // set up routes
     app.use(imageUploaderRoutes);
@@ -62,7 +66,9 @@ async function run() {
     app.use(logoRoutes(logoCollection));
     app.use(footerDescriptionRoutes(footerDescriptionCollection));
     app.use(footerInfoRoutes(footerInfoCollection));
+    app.use(socialMediaRoutes(socialMediaCollection));
     app.use(categorySliderRoutes(categorySliderCollection));
+    app.use(refundRoutes(refundCollection));
     app.use(orderRoutes(orderCollection, productsCollection));
     app.use(userRoutes(userCollection, otpCollection, forgetOTPCollection));
 

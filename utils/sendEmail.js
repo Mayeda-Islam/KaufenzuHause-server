@@ -24,7 +24,7 @@ const sendOTPVerificationEmail = async (collection, email, res) => {
       from: process.env.AUTH_EMAIL,
       to: email,
       subject: "Verify your email",
-      html: `Please enter <b>${otp}</b> to verify your email`,
+      html: `Bitte geben Sie ihr <b>${otp}</b> ein, um ihre E-Mail-Adresse zu bestätigen.`,
     };
 
     const hashedOTP = await bcrypt.hash(otp, saltRounds);
