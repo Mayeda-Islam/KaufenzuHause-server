@@ -27,7 +27,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("image"));
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.lfgwdee.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.y35u1n7.mongodb.net/?retryWrites=true&w=majority`;
+
 const uri2 = "mongodb://127.0.0.1:27017";
 
 const client = new MongoClient(uri, {
